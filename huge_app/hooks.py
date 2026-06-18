@@ -142,7 +142,20 @@ app_license = "mit"
 doc_events = {
 	"Opportunity": {
 		"on_update": "huge_app.custom.opportunity.opportunity.on_update",
-	}
+	},
+	"Purchase Receipt": {
+		"on_submit": "huge_app.custom.purchase_receipt.purchase_receipt.on_submit",
+		"on_update": "huge_app.custom.purchase_receipt.purchase_receipt.on_update",
+	},
+	"Project": {
+		"after_insert": "huge_app.custom.project.project.after_insert",
+	},
+	"Sales Order": {
+		"on_submit": "huge_app.custom.sales_order.sales_order.on_submit",
+	},
+	"Material Request": {
+		"before_save": "huge_app.custom.material_request.material_request.before_save",
+	},
 }
 # Scheduled Tasks
 # ---------------
@@ -259,7 +272,9 @@ fixtures = [
         [
             "name", "in", [
                 "Opportunity-custom_project_name",
+                "Opportunity-custom_external_designer",
                 "Opportunity-custom_external_designer_items",
+                "Opportunity-custom_external_items",
                 "Purchase Order Item-custom_note"
 			]
 		]

@@ -29,12 +29,12 @@ def on_update(doc, method=None):
 
 def _handle_workflow_approved(doc):
 
-    curr_state = doc.sales_stage
+    curr_state = doc.workflow_state
     if not curr_state:
         return
 
     prev_doc   = doc.get_doc_before_save()
-    prev_state = prev_doc.sales_stage if prev_doc else None
+    prev_state = prev_doc.workflow_state if prev_doc else None
 
     if prev_state != PO_FROM_STATE:
         return
@@ -60,8 +60,8 @@ def _handle_workflow_approved(doc):
 
     # --- التحقق من عدم وجود PO سابق ---
     existing_po = frappe.db.get_value("Purchase Order", {
-        "custom_opportunity": doc.name,
-        "docstatus"         : ["!=", 2],
+        "opportunity": doc.name,
+        "docstatus"  : ["!=", 2],
     })
     if existing_po:
         frappe.msgprint(
@@ -72,9 +72,9 @@ def _handle_workflow_approved(doc):
 
     # --- إنشاء PO ---
     po = frappe.new_doc("Purchase Order")
-    po.supplier           = supplier
-    po.custom_opportunity = doc.name
-    po.schedule_date      = frappe.utils.add_days(frappe.utils.nowdate(), 7)
+    po.supplier      = supplier
+    po.opportunity   = doc.name
+    po.schedule_date = frappe.utils.add_days(frappe.utils.nowdate(), 7)
 
     for item in doc.custom_external_items:
         po.append("items", {
@@ -109,12 +109,12 @@ def _handle_workflow_approved(doc):
 
 def _handle_workflow_rejected(doc):
 
-    curr_state = doc.sales_stage
+    curr_state = doc.workflow_state
     if not curr_state:
         return
 
     prev_doc   = doc.get_doc_before_save()
-    prev_state = prev_doc.sales_stage if prev_doc else None
+    prev_state = prev_doc.workflow_state if prev_doc else None
 
     if prev_state != CANCEL_FROM_STATE:
         return
@@ -125,8 +125,8 @@ def _handle_workflow_rejected(doc):
 
     # --- إيجاد الـ PO المرتبط ---
     po_name = frappe.db.get_value("Purchase Order", {
-        "custom_opportunity": doc.name,
-        "docstatus"         : 1,          # مسلّم فقط
+        "opportunity": doc.name,
+        "docstatus"  : 1,          # مسلّم فقط
     })
 
     if not po_name:
@@ -170,3 +170,104 @@ def _get_transition_next_state(from_state, action):
         },
         "next_state"
     )
+"""
+SERVER SCRIPT: unidome:opportunity_cost_transfer
+DocType:       Opportunity
+Event:         on_update
+ERPNext:       v15.x — Huge Group (HC&EG / HC&EP / HC&EM)
+
+PURPOSE:
+When Opportunity reaches Won or Lost terminal state,
+create Purchase Invoice for pre-contract design costs
+that were received via Purchase Receipt (sitting in GRNI).
+
+  WON  → PI posted to Project Cost Center (direct project expense)
+  LOST → PI posted to design department expense account
+
+MULTI-ENTITY: derives company abbreviation from doc.company dynamically.
+"""
+
+# ─── COMPANY ABBREVIATION (dynamic) ──────────────────────────────────────────
+def get_abbr(company):
+    abbr = frappe.db.get_value("Company", company, "abbr")
+    return abbr or ""
+
+# ─── TERMINAL STATE DEFINITIONS ──────────────────────────────────────────────
+WON_STATES  = {"Won", "Contract Signed", "Order Confirmed"}
+LOST_STATES = {"Lost", "Cancelled", "Rejected", "No Go"}
+
+# ─── ACCOUNT NAME BUILDERS ────────────────────────────────────────────────────
+def get_accounts(company):
+    abbr = get_abbr(company)
+    return {
+        "project_expense": f"تكاليف تصميم مشاريع - {abbr}",
+        "lost_expense":    f"مصاريف عطاءات خاسرة - {abbr}",
+    }
+
+# ─── HELPERS ─────────────────────────────────────────────────────────────────
+def get_linked_purchase_receipts(opportunity_name):
+    return frappe.get_all(
+        "Purchase Receipt",
+        filters={
+            "custom_opportunity": opportunity_name,
+            "docstatus": 1,
+            "status": ("!=", "Completed")
+        },
+        fields=["name", "supplier", "company", "posting_date", "currency", "conversion_rate"]
+    )
+
+def create_purchase_invoice(pr_name, target_account, target_cost_center, opportunity_name):
+    existing = frappe.get_all(
+        "Purchase Invoice",
+        filters={"custom_opportunity": opportunity_name, "docstatus": ("!=", 2)},
+        fields=["name"]
+    )
+    if existing:
+        frappe.log_error(
+            f"PI already exists for Opportunity {opportunity_name}: {existing[0]['name']}",
+            "Cost Transfer — Duplicate Skipped"
+        )
+        return None
+
+    pr  = frappe.get_doc("Purchase Receipt", pr_name)
+    pi  = frappe.new_doc("Purchase Invoice")
+    pi.supplier         = pr.supplier
+    pi.company          = pr.company
+    pi.posting_date     = frappe.utils.today()
+    pi.set_posting_time = 1
+    pi.update_stock     = 0
+    pi.currency         = pr.currency
+    pi.conversion_rate  = pr.conversion_rate or 1
+
+    if hasattr(pi, "custom_opportunity"):
+        pi.custom_opportunity = opportunity_name
+
+    for pr_item in pr.items:
+        row = pi.append("items", {})
+        row.item_code        = pr_item.item_code
+        row.item_name        = pr_item.item_name
+        row.description      = pr_item.description or pr_item.item_name
+        row.qty              = pr_item.qty
+        row.uom              = pr_item.uom
+        row.rate             = pr_item.rate
+        row.amount           = pr_item.amount
+        row.expense_account  = target_account
+        row.cost_center      = target_cost_center
+        row.purchase_receipt = pr_name
+        row.pr_detail        = pr_item.name
+
+    for pr_tax in pr.taxes:
+        row = pi.append("taxes", {})
+        row.charge_type   = pr_tax.charge_type
+        row.account_head  = pr_tax.account_head
+        row.rate          = pr_tax.rate
+        row.tax_amount    = pr_tax.tax_amount
+        row.description   = pr_tax.description
+
+    pi.insert(ignore_permissions=True)
+    frappe.log_error(
+        f"PI {pi.name} created → Opportunity {opportunity_name} | PR {pr_name} | Account {target_account}",
+        "Cost Transfer — Success"
+    )
+    return pi.name
+
