@@ -1,0 +1,15 @@
+[
+ {"doctype": "Workflow State", "name": "Needs Analysis",                    "workflow_state_name": "Needs Analysis",                    "style": ""},
+ {"doctype": "Workflow State", "name": "Qualification Review",               "workflow_state_name": "Qualification Review",               "style": ""},
+ {"doctype": "Workflow State", "name": "Qualified",                          "workflow_state_name": "Qualified",                          "style": "Success"},
+ {"doctype": "Workflow State", "name": "Preliminary Design Requested",       "workflow_state_name": "Preliminary Design Requested",       "style": ""},
+ {"doctype": "Workflow State", "name": "Preliminary Design Received",        "workflow_state_name": "Preliminary Design Received",        "style": ""},
+ {"doctype": "Workflow State", "name": "Preliminary Design Review",          "workflow_state_name": "Preliminary Design Review",          "style": ""},
+ {"doctype": "Workflow State", "name": "Costing and Saving Analysis",        "workflow_state_name": "Costing and Saving Analysis",        "style": ""},
+ {"doctype": "Workflow State", "name": "Quotation Ready",                    "workflow_state_name": "Quotation Ready",                    "style": "Success"},
+ {"doctype": "Workflow State", "name": "Quotation Sent",                     "workflow_state_name": "Quotation Sent",                     "style": ""},
+ {"doctype": "Workflow State", "name": "Negotiation/Review",                 "workflow_state_name": "Negotiation/Review",                 "style": "Warning"},
+ {"doctype": "Workflow State", "name": "Closed Won",                         "workflow_state_name": "Closed Won",                         "style": "Success"},
+ {"doctype": "Workflow State", "name": "Closed Lost",                        "workflow_state_name": "Closed Lost",                        "style": "Danger"},
+ {"doctype": "Workflow State", "name": "Design Revision Required",           "workflow_state_name": "Design Revision Required",           "style": "Warning"}
+]

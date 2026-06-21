@@ -1,0 +1,12 @@
+[
+ {"doctype": "Role", "name": "UNIDOME Sales User", "role_name": "UNIDOME Sales User", "desk_access": 1},
+ {"doctype": "Role", "name": "UNIDOME Sales Manager", "role_name": "UNIDOME Sales Manager", "desk_access": 1},
+ {"doctype": "Role", "name": "UNIDOME Operations User", "role_name": "UNIDOME Operations User", "desk_access": 1},
+ {"doctype": "Role", "name": "UNIDOME Operations Manager", "role_name": "UNIDOME Operations Manager", "desk_access": 1},
+ {"doctype": "Role", "name": "UNIDOME Technical Manager", "role_name": "UNIDOME Technical Manager", "desk_access": 1},
+ {"doctype": "Role", "name": "UNIDOME External Designer", "role_name": "UNIDOME External Designer", "desk_access": 1},
+ {"doctype": "Role", "name": "UNIDOME Factory User", "role_name": "UNIDOME Factory User", "desk_access": 1},
+ {"doctype": "Role", "name": "UNIDOME Site Engineer", "role_name": "UNIDOME Site Engineer", "desk_access": 1},
+ {"doctype": "Role", "name": "UNIDOME Finance User", "role_name": "UNIDOME Finance User", "desk_access": 1},
+ {"doctype": "Role", "name": "UNIDOME Quality Inspector", "role_name": "UNIDOME Quality Inspector", "desk_access": 1}
+]

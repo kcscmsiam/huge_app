@@ -1,34 +1,44 @@
 """
 huge_app/custom/opportunity/opportunity.py
 
-IMPORTANT: كل الكود يجب أن يكون داخل دوال
-           لا يجوز كتابة أي كود في مستوى الـ module خارج الدوال
+Handlers:
+  1. Outsourced Designer workflow — PO creation / cancellation (existing)
+  2. UNIDOME Scripts 2, 3, 4, 8 — state-machine automations
 """
 
 import frappe
+from datetime import date, timedelta
+from frappe.utils.user import get_users_with_role
 
 WORKFLOW_NAME = "Outsourced Designer"
 
-# --- إنشاء PO ---
-PO_FROM_STATE      = "Preliminary Design Requested"
-PO_ACTION          = "Approve"
+PO_FROM_STATE     = "Preliminary Design Requested"
+PO_ACTION         = "Approve"
 
-# --- إلغاء PO ---
-CANCEL_FROM_STATE  = "Preliminary Design Check"
-CANCEL_ACTION      = "Reject"
+CANCEL_FROM_STATE = "Preliminary Design Check"
+CANCEL_ACTION     = "Reject"
+
+UNIDOME_SCORE_THRESHOLD = 7
 
 
 def on_update(doc, method=None):
+    if doc.flags.ignore_unidome_hooks:
+        return
+
+    # Existing: Outsourced Designer PO logic
     _handle_workflow_approved(doc)
     _handle_workflow_rejected(doc)
 
+    # UNIDOME automations
+    _unidome_sla_preliminary_design(doc)
+    _unidome_costing_approved_create_quotation(doc)
+    _unidome_negotiation_lost_reason(doc)
+    _unidome_final_design_validate_fields(doc)
 
-# ──────────────────────────────────────────────
-# إنشاء PO عند Approve من Preliminary Design Requested
-# ──────────────────────────────────────────────
+
+# ─── Outsourced Designer: create PO on Approve ───────────────────────────────
 
 def _handle_workflow_approved(doc):
-
     curr_state = doc.workflow_state
     if not curr_state:
         return
@@ -43,22 +53,13 @@ def _handle_workflow_approved(doc):
     if not approved_next_state or curr_state != approved_next_state:
         return
 
-    # --- التحقق من الحقول المطلوبة ---
     supplier = doc.get("custom_external_designer")
-    qty      = frappe.utils.flt(doc.get("custom_qty_for_external_designer"))
-    rate     = frappe.utils.flt(doc.get("custom_rate_for_external_designer"))
-    note     = doc.get("custom_notes_for_external_designer")
-
     if not supplier:
         frappe.throw("يرجى تحديد المصمم الخارجي (External Designer) قبل الموافقة.")
-
-    # if not doc.custom_external_items.qty:
-    #     frappe.throw("يرجى إدخال الكمية (Qty for External Designer) قبل الموافقة.")
 
     if not doc.custom_external_items:
         frappe.throw("يرجى إضافة الأصناف (External Designer Items) في الفرصة قبل الموافقة.")
 
-    # --- التحقق من عدم وجود PO سابق ---
     existing_po = frappe.db.get_value("Purchase Order", {
         "opportunity": doc.name,
         "docstatus"  : ["!=", 2],
@@ -70,7 +71,6 @@ def _handle_workflow_approved(doc):
         )
         return
 
-    # --- إنشاء PO ---
     po = frappe.new_doc("Purchase Order")
     po.supplier      = supplier
     po.opportunity   = doc.name
@@ -88,27 +88,20 @@ def _handle_workflow_approved(doc):
     po.insert(ignore_permissions=True)
     po.submit()
 
-    frappe.publish_realtime(
-        "msgprint",
-        {
-            "message"  : f"✅ تم إنشاء أمر الشراء <b><a href='/app/purchase-order/{po.name}'>{po.name}</a></b>",
-            "title"    : "Purchase Order Created",
-            "indicator": "green",
-        },
-        user=frappe.session.user
-    )
+    frappe.publish_realtime("msgprint", {
+        "message"  : f"✅ تم إنشاء أمر الشراء <b><a href='/app/purchase-order/{po.name}'>{po.name}</a></b>",
+        "title"    : "Purchase Order Created",
+        "indicator": "green",
+    }, user=frappe.session.user)
 
     frappe.logger("huge_app").info(
         f"[huge_app] PO {po.name} created for Opportunity {doc.name}"
     )
 
 
-# ──────────────────────────────────────────────
-# إلغاء PO عند Reject من Preliminary Design Check
-# ──────────────────────────────────────────────
+# ─── Outsourced Designer: cancel PO on Reject ────────────────────────────────
 
 def _handle_workflow_rejected(doc):
-
     curr_state = doc.workflow_state
     if not curr_state:
         return
@@ -123,10 +116,9 @@ def _handle_workflow_rejected(doc):
     if not reject_next_state or curr_state != reject_next_state:
         return
 
-    # --- إيجاد الـ PO المرتبط ---
     po_name = frappe.db.get_value("Purchase Order", {
         "opportunity": doc.name,
-        "docstatus"  : 1,          # مسلّم فقط
+        "docstatus"  : 1,
     })
 
     if not po_name:
@@ -136,85 +128,221 @@ def _handle_workflow_rejected(doc):
         )
         return
 
-    # --- إلغاء الـ PO ---
     po = frappe.get_doc("Purchase Order", po_name)
     po.cancel()
 
-    frappe.publish_realtime(
-        "msgprint",
-        {
-            "message"  : f"🚫 تم إلغاء أمر الشراء <b><a href='/app/purchase-order/{po.name}'>{po.name}</a></b>",
-            "title"    : "Purchase Order Cancelled",
-            "indicator": "red",
-        },
-        user=frappe.session.user
-    )
+    frappe.publish_realtime("msgprint", {
+        "message"  : f"🚫 تم إلغاء أمر الشراء <b><a href='/app/purchase-order/{po.name}'>{po.name}</a></b>",
+        "title"    : "Purchase Order Cancelled",
+        "indicator": "red",
+    }, user=frappe.session.user)
 
     frappe.logger("huge_app").info(
         f"[huge_app] PO {po.name} cancelled for Opportunity {doc.name}"
     )
 
 
-# ──────────────────────────────────────────────
-# Helper
-# ──────────────────────────────────────────────
+# ─── Script 2: SLA for Preliminary Design ────────────────────────────────────
+
+def _unidome_sla_preliminary_design(doc):
+    unidome_state = doc.get("custom_unidome_opportunity_state")
+    if unidome_state != "Preliminary Design Requested":
+        return
+
+    prev_doc = doc.get_doc_before_save()
+    if not prev_doc:
+        return
+    if prev_doc.get("custom_unidome_opportunity_state") == "Preliminary Design Requested":
+        return
+
+    due_date = _add_business_days(frappe.utils.today(), 5)
+    frappe.db.set_value(
+        "Opportunity", doc.name,
+        "custom_sla_design_due_date", due_date
+    )
+
+    recipients = get_users_with_role("UNIDOME External Designer")
+    if recipients:
+        frappe.sendmail(
+            recipients=recipients,
+            subject=f"[UNIDOME] طلب تصميم مبدئي – {doc.name}",
+            message=f"""
+<p>تم طلب تصميم مبدئي للفرصة: <strong>{doc.name}</strong></p>
+<p>موقع المشروع: {doc.get('custom_project_location') or '—'}</p>
+<p>تاريخ الاستحقاق (SLA): <strong>{due_date}</strong></p>
+<p>يرجى الالتزام بالموعد المحدد.</p>
+""",
+        )
+
+    today_date = frappe.utils.getdate(frappe.utils.today())
+    sla_date   = doc.get("custom_sla_design_due_date")
+    if sla_date and frappe.utils.getdate(sla_date) < today_date:
+        managers = get_users_with_role("UNIDOME Operations Manager")
+        if managers:
+            frappe.sendmail(
+                recipients=managers,
+                subject=f"[UNIDOME] تنبيه تجاوز SLA – {doc.name}",
+                message=f"<p>الفرصة <strong>{doc.name}</strong> تجاوزت مهلة التصميم المبدئي.</p>",
+            )
+
+
+# ─── Script 3: Costing Approved → Auto-create Quotation ─────────────────────
+
+def _unidome_costing_approved_create_quotation(doc):
+    unidome_state = doc.get("custom_unidome_opportunity_state")
+    if unidome_state != "Quotation Ready":
+        return
+
+    prev_doc = doc.get_doc_before_save()
+    if not prev_doc:
+        return
+    if prev_doc.get("custom_unidome_opportunity_state") == "Quotation Ready":
+        return
+
+    existing_qt = frappe.db.get_value(
+        "Quotation",
+        {"opportunity": doc.name, "docstatus": ["!=", 2]},
+        "name"
+    )
+    if existing_qt:
+        return
+
+    party_type = "Customer"
+    party = frappe.db.get_value("Customer", {"customer_name": doc.party_name}, "name")
+    if not party:
+        party_type = "Lead"
+        party = doc.lead
+
+    area = frappe.utils.flt(doc.get("custom_total_slab_area") or 0)
+    item_description = f"Unidome Slab System – {area} م²"
+
+    qt = frappe.new_doc("Quotation")
+    qt.quotation_to  = party_type
+    qt.party_name    = party or doc.party_name
+    qt.opportunity   = doc.name
+    qt.valid_till    = frappe.utils.add_days(frappe.utils.today(), 30)
+    qt.order_type    = "Sales"
+
+    qt.append("items", {
+        "item_name"  : "Unidome Slab System",
+        "description": item_description,
+        "qty"        : area or 1,
+        "rate"       : 0,
+        "uom"        : "Meter²" if frappe.db.exists("UOM", "Meter²") else "Nos",
+    })
+
+    qt.flags.ignore_unidome_hooks = True
+    qt.insert(ignore_permissions=True)
+
+    frappe.publish_realtime("msgprint", {
+        "message"  : f"✅ تم إنشاء عرض السعر <b><a href='/app/quotation/{qt.name}'>{qt.name}</a></b>",
+        "title"    : "Quotation Created",
+        "indicator": "green",
+    }, user=frappe.session.user)
+
+
+# ─── Script 4: Closed Lost → require lost reason ─────────────────────────────
+
+def _unidome_negotiation_lost_reason(doc):
+    unidome_state = doc.get("custom_unidome_opportunity_state")
+    if unidome_state != "Closed Lost":
+        return
+
+    if not doc.get("custom_lost_reason"):
+        frappe.throw(
+            "يرجى تعبئة سبب الخسارة (Lost Reason) قبل إغلاق الفرصة",
+            frappe.ValidationError
+        )
+
+    frappe.logger("huge_app").info(
+        f"[Closed Lost] {doc.name} | Reason: {doc.custom_lost_reason}"
+    )
+
+
+# ─── Script 8: Final Design → validate BOQ fields ────────────────────────────
+
+def _unidome_final_design_validate_fields(doc):
+    unidome_state = doc.get("custom_unidome_opportunity_state")
+    if unidome_state != "Costing and Saving Analysis":
+        return
+
+    prev_doc = doc.get_doc_before_save()
+    if not prev_doc:
+        return
+    if prev_doc.get("custom_unidome_opportunity_state") == "Costing and Saving Analysis":
+        return
+
+    required_fields = {
+        "custom_unidome_qty"      : "كمية وحدات Unidome",
+        "custom_unidome_size"     : "مقاس وحدة Unidome",
+        "custom_steel_qty_kg"     : "كمية الحديد (كغ)",
+        "custom_concrete_qty_m3"  : "كمية الخرسانة (م³)",
+        "custom_slab_thickness_mm": "سماكة البلاطة (مم)",
+    }
+
+    missing = [
+        label for field, label in required_fields.items()
+        if not doc.get(field)
+    ]
+
+    if missing:
+        frappe.throw(
+            "يرجى إدخال قيم حقول التصميم النهائي قبل الانتقال إلى مرحلة التسعير: "
+            + "، ".join(missing),
+            frappe.ValidationError
+        )
+
+
+# ─── Helpers ─────────────────────────────────────────────────────────────────
 
 def _get_transition_next_state(from_state, action):
-    """إيجاد الحالة التالية لانتقال معين في الـ Workflow"""
     return frappe.db.get_value(
         "Workflow Transition",
-        {
-            "parent": WORKFLOW_NAME,
-            "state" : from_state,
-            "action": action,
-        },
+        {"parent": WORKFLOW_NAME, "state": from_state, "action": action},
         "next_state"
     )
-"""
-SERVER SCRIPT: unidome:opportunity_cost_transfer
-DocType:       Opportunity
-Event:         on_update
-ERPNext:       v15.x — Huge Group (HC&EG / HC&EP / HC&EM)
 
-PURPOSE:
-When Opportunity reaches Won or Lost terminal state,
-create Purchase Invoice for pre-contract design costs
-that were received via Purchase Receipt (sitting in GRNI).
 
-  WON  → PI posted to Project Cost Center (direct project expense)
-  LOST → PI posted to design department expense account
+def _add_business_days(start_date, num_days):
+    current = frappe.utils.getdate(start_date)
+    added   = 0
+    while added < num_days:
+        current += timedelta(days=1)
+        if current.weekday() not in (4, 5):  # 4=Fri, 5=Sat (Jordan weekend)
+            added += 1
+    return current
 
-MULTI-ENTITY: derives company abbreviation from doc.company dynamically.
-"""
 
-# ─── COMPANY ABBREVIATION (dynamic) ──────────────────────────────────────────
+# ─── Cost Transfer helpers (not called directly via hook) ────────────────────
+
 def get_abbr(company):
     abbr = frappe.db.get_value("Company", company, "abbr")
     return abbr or ""
 
-# ─── TERMINAL STATE DEFINITIONS ──────────────────────────────────────────────
+
 WON_STATES  = {"Won", "Contract Signed", "Order Confirmed"}
 LOST_STATES = {"Lost", "Cancelled", "Rejected", "No Go"}
 
-# ─── ACCOUNT NAME BUILDERS ────────────────────────────────────────────────────
+
 def get_accounts(company):
     abbr = get_abbr(company)
     return {
         "project_expense": f"تكاليف تصميم مشاريع - {abbr}",
-        "lost_expense":    f"مصاريف عطاءات خاسرة - {abbr}",
+        "lost_expense"   : f"مصاريف عطاءات خاسرة - {abbr}",
     }
 
-# ─── HELPERS ─────────────────────────────────────────────────────────────────
+
 def get_linked_purchase_receipts(opportunity_name):
     return frappe.get_all(
         "Purchase Receipt",
         filters={
             "custom_opportunity": opportunity_name,
-            "docstatus": 1,
-            "status": ("!=", "Completed")
+            "docstatus"         : 1,
+            "status"            : ("!=", "Completed")
         },
         fields=["name", "supplier", "company", "posting_date", "currency", "conversion_rate"]
     )
+
 
 def create_purchase_invoice(pr_name, target_account, target_cost_center, opportunity_name):
     existing = frappe.get_all(
@@ -223,9 +351,8 @@ def create_purchase_invoice(pr_name, target_account, target_cost_center, opportu
         fields=["name"]
     )
     if existing:
-        frappe.log_error(
-            f"PI already exists for Opportunity {opportunity_name}: {existing[0]['name']}",
-            "Cost Transfer — Duplicate Skipped"
+        frappe.logger("huge_app").info(
+            f"[Cost Transfer] PI already exists for Opportunity {opportunity_name}: {existing[0]['name']}"
         )
         return None
 
@@ -258,16 +385,14 @@ def create_purchase_invoice(pr_name, target_account, target_cost_center, opportu
 
     for pr_tax in pr.taxes:
         row = pi.append("taxes", {})
-        row.charge_type   = pr_tax.charge_type
-        row.account_head  = pr_tax.account_head
-        row.rate          = pr_tax.rate
-        row.tax_amount    = pr_tax.tax_amount
-        row.description   = pr_tax.description
+        row.charge_type  = pr_tax.charge_type
+        row.account_head = pr_tax.account_head
+        row.rate         = pr_tax.rate
+        row.tax_amount   = pr_tax.tax_amount
+        row.description  = pr_tax.description
 
     pi.insert(ignore_permissions=True)
-    frappe.log_error(
-        f"PI {pi.name} created → Opportunity {opportunity_name} | PR {pr_name} | Account {target_account}",
-        "Cost Transfer — Success"
+    frappe.logger("huge_app").info(
+        f"[Cost Transfer] PI {pi.name} → Opp {opportunity_name} | PR {pr_name} | Acct {target_account}"
     )
     return pi.name
-

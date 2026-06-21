@@ -1,0 +1,137 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-06-19 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "project",
+  "customer",
+  "survey_date",
+  "section_scores",
+  "overall_score",
+  "design_score",
+  "execution_score",
+  "timeline_score",
+  "comments",
+  "section_snag",
+  "snag_list"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Series",
+   "label": "Series",
+   "options": "CSS-.YYYY.-.####"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "المشروع",
+   "options": "Project",
+   "reqd": 1
+  },
+  {
+   "fieldname": "customer",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "العميل",
+   "options": "Customer"
+  },
+  {
+   "fieldname": "survey_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "تاريخ الاستبيان",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_scores",
+   "fieldtype": "Section Break",
+   "label": "التقييمات"
+  },
+  {
+   "fieldname": "overall_score",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "التقييم العام (1-10)",
+   "reqd": 1
+  },
+  {
+   "fieldname": "design_score",
+   "fieldtype": "Int",
+   "label": "تقييم التصميم"
+  },
+  {
+   "fieldname": "execution_score",
+   "fieldtype": "Int",
+   "label": "تقييم التنفيذ"
+  },
+  {
+   "fieldname": "timeline_score",
+   "fieldtype": "Int",
+   "label": "تقييم الالتزام بالوقت"
+  },
+  {
+   "fieldname": "comments",
+   "fieldtype": "Text",
+   "label": "ملاحظات إضافية"
+  },
+  {
+   "fieldname": "section_snag",
+   "fieldtype": "Section Break",
+   "label": "قائمة الملاحظات (Snag List)"
+  },
+  {
+   "fieldname": "snag_list",
+   "fieldtype": "Table",
+   "label": "قائمة الملاحظات",
+   "options": "Snag List Item"
+  }
+ ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-06-19 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Huge App",
+ "name": "Customer Satisfaction Survey",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "cancel": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "UNIDOME Sales Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "read": 1,
+   "role": "UNIDOME Operations Manager"
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

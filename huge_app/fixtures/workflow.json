@@ -1,0 +1,234 @@
+[
+ {
+  "doctype": "Workflow",
+  "name": "UNIDOME Opportunity Workflow",
+  "workflow_name": "UNIDOME Opportunity Workflow",
+  "document_type": "Opportunity",
+  "workflow_state_field": "custom_unidome_opportunity_state",
+  "is_active": 1,
+  "send_email_alert": 0,
+  "states": [
+   {
+    "doctype": "Workflow Document State",
+    "state": "Needs Analysis",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Sales User",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Qualification Review",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Sales Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Qualified",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Sales User",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Preliminary Design Requested",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Operations User",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Preliminary Design Received",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Technical Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Preliminary Design Review",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Technical Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Costing and Saving Analysis",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Technical Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Quotation Ready",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Sales User",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Quotation Sent",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Sales User",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Negotiation/Review",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Sales Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Closed Won",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Sales Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Closed Lost",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Sales Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Design Revision Required",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Operations User",
+    "is_optional_state": 0
+   }
+  ],
+  "transitions": [
+   {
+    "doctype": "Workflow Transition",
+    "state": "Needs Analysis",
+    "action": "Submit for Qualification",
+    "next_state": "Qualification Review",
+    "allowed": "UNIDOME Sales User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Qualification Review",
+    "action": "Approve",
+    "next_state": "Qualified",
+    "allowed": "UNIDOME Sales Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Qualification Review",
+    "action": "Reject",
+    "next_state": "Needs Analysis",
+    "allowed": "UNIDOME Sales Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Qualified",
+    "action": "Request Preliminary Design",
+    "next_state": "Preliminary Design Requested",
+    "allowed": "UNIDOME Sales User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Preliminary Design Requested",
+    "action": "Mark Received",
+    "next_state": "Preliminary Design Received",
+    "allowed": "UNIDOME Operations User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Preliminary Design Received",
+    "action": "Submit for Review",
+    "next_state": "Preliminary Design Review",
+    "allowed": "UNIDOME Technical Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Preliminary Design Review",
+    "action": "Approve Preliminary Design",
+    "next_state": "Costing and Saving Analysis",
+    "allowed": "UNIDOME Technical Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Preliminary Design Review",
+    "action": "Reject - Request Revision",
+    "next_state": "Preliminary Design Requested",
+    "allowed": "UNIDOME Technical Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Preliminary Design Review",
+    "action": "Request Design Revision",
+    "next_state": "Design Revision Required",
+    "allowed": "UNIDOME Technical Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Design Revision Required",
+    "action": "Re-request Design",
+    "next_state": "Preliminary Design Requested",
+    "allowed": "UNIDOME Operations User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Costing and Saving Analysis",
+    "action": "Approve Costing",
+    "next_state": "Quotation Ready",
+    "allowed": "UNIDOME Technical Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Quotation Ready",
+    "action": "Send Quotation",
+    "next_state": "Quotation Sent",
+    "allowed": "UNIDOME Sales User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Quotation Sent",
+    "action": "Mark as Under Negotiation",
+    "next_state": "Negotiation/Review",
+    "allowed": "UNIDOME Sales User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Negotiation/Review",
+    "action": "Revise Pricing",
+    "next_state": "Costing and Saving Analysis",
+    "allowed": "UNIDOME Sales Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Negotiation/Review",
+    "action": "Mark Won",
+    "next_state": "Closed Won",
+    "allowed": "UNIDOME Sales Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Negotiation/Review",
+    "action": "Mark Lost",
+    "next_state": "Closed Lost",
+    "allowed": "UNIDOME Sales Manager",
+    "allow_self_approval": 1
+   }
+  ]
+ }
+]

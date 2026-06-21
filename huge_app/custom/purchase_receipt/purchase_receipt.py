@@ -1,5 +1,7 @@
 import frappe
 
+_log = lambda msg: frappe.logger("huge_app").info(msg)
+
 
 def on_submit(doc, method=None):
     pr_opportunity = doc.get("custom_opportunity")
@@ -14,14 +16,11 @@ def on_submit(doc, method=None):
             "Received"
         )
         frappe.db.commit()
-        frappe.log_error(
-            f"Opportunity {pr_opportunity} prelim_design_status → Received (triggered by PR {doc.name})",
-            "PR Submit → Opportunity Update — Success"
-        )
+        _log(f"[PR Submit] Opportunity {pr_opportunity} prelim_design_status → Received (PR {doc.name})")
     else:
         frappe.log_error(
-            f"PR {doc.name} references non-existent Opportunity: {pr_opportunity}",
-            "PR Submit → Opportunity Update — Missing Opportunity"
+            "PR Submit → Opportunity Update — Missing Opportunity",
+            f"PR {doc.name} references non-existent Opportunity: {pr_opportunity}"
         )
 
 
@@ -37,15 +36,15 @@ def on_update(doc, method=None):
 
     if not pr_opportunity:
         frappe.log_error(
-            f"PR {doc.name} approved but has no linked Opportunity. BOQ not created.",
-            "PR Approved → BOQ — Missing Opportunity"
+            "PR Approved → BOQ — Missing Opportunity",
+            f"PR {doc.name} approved but has no linked Opportunity. BOQ not created."
         )
         return
 
     if not frappe.db.exists("Opportunity", pr_opportunity):
         frappe.log_error(
-            f"PR {doc.name} references non-existent Opportunity: {pr_opportunity}",
-            "PR Approved → BOQ — Invalid Opportunity"
+            "PR Approved → BOQ — Invalid Opportunity",
+            f"PR {doc.name} references non-existent Opportunity: {pr_opportunity}"
         )
         return
 
@@ -55,10 +54,7 @@ def on_update(doc, method=None):
         fields=["name"]
     )
     if existing_boq:
-        frappe.log_error(
-            f"BOQ already exists for Opportunity {pr_opportunity}: {existing_boq[0]['name']}",
-            "PR Approved → BOQ — Duplicate Skipped"
-        )
+        _log(f"[PR Approved] BOQ already exists for Opportunity {pr_opportunity}: {existing_boq[0]['name']}")
         return
 
     opp = frappe.get_doc("Opportunity", pr_opportunity)
@@ -81,7 +77,4 @@ def on_update(doc, method=None):
     frappe.db.set_value("Purchase Receipt", doc.name, "custom_boq_created", 1)
     frappe.db.commit()
 
-    frappe.log_error(
-        f"BOQ {boq.name} created for Opportunity {pr_opportunity} from PR {doc.name}",
-        "PR Approved → BOQ — Success"
-    )
+    _log(f"[PR Approved] BOQ {boq.name} created for Opportunity {pr_opportunity} from PR {doc.name}")

@@ -1,0 +1,158 @@
+{
+ "actions": [],
+ "autoname": "naming_series:",
+ "creation": "2026-06-19 00:00:00.000000",
+ "doctype": "DocType",
+ "editable_grid": 0,
+ "engine": "InnoDB",
+ "field_order": [
+  "naming_series",
+  "project",
+  "inspection_stage",
+  "inspection_date",
+  "site_engineer",
+  "section_checklist",
+  "checklist",
+  "section_photos",
+  "photos",
+  "section_result",
+  "result",
+  "rejection_notes",
+  "capa_opened"
+ ],
+ "fields": [
+  {
+   "fieldname": "naming_series",
+   "fieldtype": "Series",
+   "label": "Series",
+   "options": "SIR-.YYYY.-.####"
+  },
+  {
+   "fieldname": "project",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "in_standard_filter": 1,
+   "label": "المشروع",
+   "options": "Project",
+   "reqd": 1
+  },
+  {
+   "fieldname": "inspection_stage",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "مرحلة التدقيق",
+   "options": "Lower Steel Network\nUnidome Installation\nUpper Steel Network\nConcrete Pouring",
+   "reqd": 1
+  },
+  {
+   "fieldname": "inspection_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "تاريخ التدقيق",
+   "reqd": 1
+  },
+  {
+   "fieldname": "site_engineer",
+   "fieldtype": "Link",
+   "label": "مهندس الموقع",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "section_checklist",
+   "fieldtype": "Section Break",
+   "label": "قائمة الفحص"
+  },
+  {
+   "fieldname": "checklist",
+   "fieldtype": "Table",
+   "label": "قائمة الفحص",
+   "options": "Site Inspection Checklist Item"
+  },
+  {
+   "fieldname": "section_photos",
+   "fieldtype": "Section Break",
+   "label": "الصور"
+  },
+  {
+   "fieldname": "photos",
+   "fieldtype": "Attach Multiple",
+   "label": "الصور"
+  },
+  {
+   "fieldname": "section_result",
+   "fieldtype": "Section Break",
+   "label": "النتيجة"
+  },
+  {
+   "fieldname": "result",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "النتيجة",
+   "options": "Approved\nRejected",
+   "reqd": 1
+  },
+  {
+   "fieldname": "rejection_notes",
+   "fieldtype": "Text",
+   "depends_on": "eval:doc.result == 'Rejected'",
+   "label": "ملاحظات الرفض"
+  },
+  {
+   "fieldname": "capa_opened",
+   "fieldtype": "Check",
+   "label": "تم فتح CAPA",
+   "read_only": 1
+  }
+ ],
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2026-06-19 00:00:00.000000",
+ "modified_by": "Administrator",
+ "module": "Huge App",
+ "name": "Site Inspection Report",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "cancel": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "UNIDOME Site Engineer",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "cancel": 1,
+   "email": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "UNIDOME Quality Inspector",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": [],
+ "track_changes": 1
+}

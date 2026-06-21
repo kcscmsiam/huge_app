@@ -140,6 +140,9 @@ app_license = "mit"
 # 	}
 # }
 doc_events = {
+	"Lead": {
+		"on_update": "huge_app.custom.lead.lead.on_update",
+	},
 	"Opportunity": {
 		"on_update": "huge_app.custom.opportunity.opportunity.on_update",
 	},
@@ -149,12 +152,26 @@ doc_events = {
 	},
 	"Project": {
 		"after_insert": "huge_app.custom.project.project.after_insert",
+		"on_update"   : "huge_app.custom.project.project.on_update",
 	},
 	"Sales Order": {
-		"on_submit": "huge_app.custom.sales_order.sales_order.on_submit",
+		"before_submit": "huge_app.custom.sales_order.sales_order.before_submit",
+		"on_submit"    : "huge_app.custom.sales_order.sales_order.on_submit",
 	},
 	"Material Request": {
 		"before_save": "huge_app.custom.material_request.material_request.before_save",
+	},
+	"Work Order": {
+		"on_submit": "huge_app.custom.work_order.work_order.on_submit",
+	},
+	"Delivery Note": {
+		"on_submit": "huge_app.custom.delivery_note.delivery_note.on_submit",
+	},
+	"FG QC Inspection": {
+		"on_submit": "huge_app.custom.fg_qc_inspection.fg_qc_inspection.on_submit",
+	},
+	"Customer Satisfaction Survey": {
+		"on_submit": "huge_app.custom.customer_satisfaction_survey.customer_satisfaction_survey.on_submit",
 	},
 }
 # Scheduled Tasks
@@ -267,16 +284,42 @@ doc_events = {
 # List of apps whose translatable strings should be excluded from this app's translations.
 # ignore_translatable_strings_from = []
 
+scheduler_events = {
+    "daily": [
+        "huge_app.custom.scheduled_tasks.run"
+    ]
+}
+
 fixtures = [
-    {"dt": "Custom Field", "filters": [
-        [
-            "name", "in", [
-                "Opportunity-custom_project_name",
-                "Opportunity-custom_external_designer",
-                "Opportunity-custom_external_designer_items",
-                "Opportunity-custom_external_items",
-                "Purchase Order Item-custom_note"
-			]
-		]
-	]}
+    "Role",
+    {"dt": "Workflow Action Master", "filters": [["workflow_action_name", "in", [
+        "Submit for Qualification", "Request Preliminary Design", "Mark Received",
+        "Submit for Review", "Approve Preliminary Design", "Reject - Request Revision",
+        "Request Design Revision", "Re-request Design", "Approve Costing",
+        "Send Quotation", "Mark as Under Negotiation", "Revise Pricing",
+        "Mark Won", "Mark Lost"
+    ]]]},
+    {
+        "dt": "Custom Field",
+        "filters": [
+            [
+                "name", "in", [
+                    "Opportunity-custom_project_name",
+                    "Opportunity-custom_external_designer",
+                    "Opportunity-custom_external_designer_items",
+                    "Opportunity-custom_external_items",
+                    "Purchase Order Item-custom_note",
+                ]
+            ]
+        ]
+    },
+    {
+        "dt": "Custom Field",
+        "filters": [["module", "=", "UNIDOME"]]
+    },
+    {
+        "dt": "Workflow",
+        "filters": [["name", "=", "UNIDOME Opportunity Workflow"]]
+    },
+    {"dt": "Workflow State"},
 ]

@@ -1,0 +1,16 @@
+[
+ {"doctype": "Workflow Action Master", "name": "Submit for Qualification",   "workflow_action_name": "Submit for Qualification"},
+ {"doctype": "Workflow Action Master", "name": "Request Preliminary Design", "workflow_action_name": "Request Preliminary Design"},
+ {"doctype": "Workflow Action Master", "name": "Mark Received",              "workflow_action_name": "Mark Received"},
+ {"doctype": "Workflow Action Master", "name": "Submit for Review",          "workflow_action_name": "Submit for Review"},
+ {"doctype": "Workflow Action Master", "name": "Approve Preliminary Design", "workflow_action_name": "Approve Preliminary Design"},
+ {"doctype": "Workflow Action Master", "name": "Reject - Request Revision",  "workflow_action_name": "Reject - Request Revision"},
+ {"doctype": "Workflow Action Master", "name": "Request Design Revision",    "workflow_action_name": "Request Design Revision"},
+ {"doctype": "Workflow Action Master", "name": "Re-request Design",          "workflow_action_name": "Re-request Design"},
+ {"doctype": "Workflow Action Master", "name": "Approve Costing",            "workflow_action_name": "Approve Costing"},
+ {"doctype": "Workflow Action Master", "name": "Send Quotation",             "workflow_action_name": "Send Quotation"},
+ {"doctype": "Workflow Action Master", "name": "Mark as Under Negotiation",  "workflow_action_name": "Mark as Under Negotiation"},
+ {"doctype": "Workflow Action Master", "name": "Revise Pricing",             "workflow_action_name": "Revise Pricing"},
+ {"doctype": "Workflow Action Master", "name": "Mark Won",                   "workflow_action_name": "Mark Won"},
+ {"doctype": "Workflow Action Master", "name": "Mark Lost",                  "workflow_action_name": "Mark Lost"}
+]

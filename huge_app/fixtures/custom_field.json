@@ -283,5 +283,242 @@
   "translatable": 0,
   "unique": 0,
   "width": null
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_unidome_project_data_section", "fieldtype": "Section Break",
+  "label": "بيانات المشروع (UNIDOME)", "insert_after": "custom_external_items",
+  "collapsible": 1, "module": "UNIDOME", "name": "Opportunity-custom_unidome_project_data_section"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_project_location", "fieldtype": "Data",
+  "label": "موقع المشروع", "insert_after": "custom_unidome_project_data_section",
+  "module": "UNIDOME", "name": "Opportunity-custom_project_location"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_project_type", "fieldtype": "Select",
+  "label": "نوع المشروع", "options": "سكني\nتجاري\nصناعي",
+  "insert_after": "custom_project_location",
+  "module": "UNIDOME", "name": "Opportunity-custom_project_type"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_total_slab_area", "fieldtype": "Float",
+  "label": "المساحة الكلية للبلاطة (م²)", "insert_after": "custom_project_type",
+  "module": "UNIDOME", "name": "Opportunity-custom_total_slab_area"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_num_floors", "fieldtype": "Int",
+  "label": "عدد الطوابق", "insert_after": "custom_total_slab_area",
+  "module": "UNIDOME", "name": "Opportunity-custom_num_floors"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_client_budget", "fieldtype": "Currency",
+  "label": "الميزانية التقديرية للعميل", "insert_after": "custom_num_floors",
+  "module": "UNIDOME", "name": "Opportunity-custom_client_budget"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_unidome_design_inputs_section", "fieldtype": "Section Break",
+  "label": "مدخلات التصميم", "insert_after": "custom_client_budget",
+  "collapsible": 1, "module": "UNIDOME", "name": "Opportunity-custom_unidome_design_inputs_section"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_preliminary_design_file", "fieldtype": "Attach",
+  "label": "ملف التصميم المبدئي", "insert_after": "custom_unidome_design_inputs_section",
+  "module": "UNIDOME", "name": "Opportunity-custom_preliminary_design_file"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_preliminary_design_date", "fieldtype": "Date",
+  "label": "تاريخ استلام التصميم المبدئي", "insert_after": "custom_preliminary_design_file",
+  "module": "UNIDOME", "name": "Opportunity-custom_preliminary_design_date"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_sla_design_due_date", "fieldtype": "Date",
+  "label": "تاريخ استحقاق SLA (5 أيام)", "insert_after": "custom_preliminary_design_date",
+  "read_only": 1, "module": "UNIDOME", "name": "Opportunity-custom_sla_design_due_date"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_preliminary_design_notes", "fieldtype": "Text",
+  "label": "ملاحظات المراجعة الفنية", "insert_after": "custom_sla_design_due_date",
+  "module": "UNIDOME", "name": "Opportunity-custom_preliminary_design_notes"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_unidome_design_outputs_section", "fieldtype": "Section Break",
+  "label": "مخرجات التصميم", "insert_after": "custom_preliminary_design_notes",
+  "collapsible": 1, "module": "UNIDOME", "name": "Opportunity-custom_unidome_design_outputs_section"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_final_design_file", "fieldtype": "Attach",
+  "label": "ملف التصميم النهائي (SAFE/ETABS/AutoCAD)", "insert_after": "custom_unidome_design_outputs_section",
+  "module": "UNIDOME", "name": "Opportunity-custom_final_design_file"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_final_boq_file", "fieldtype": "Attach",
+  "label": "BOQ النهائي", "insert_after": "custom_final_design_file",
+  "module": "UNIDOME", "name": "Opportunity-custom_final_boq_file"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_unidome_qty", "fieldtype": "Float",
+  "label": "كمية وحدات Unidome", "insert_after": "custom_final_boq_file",
+  "module": "UNIDOME", "name": "Opportunity-custom_unidome_qty"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_unidome_size", "fieldtype": "Data",
+  "label": "مقاس وحدة Unidome", "insert_after": "custom_unidome_qty",
+  "module": "UNIDOME", "name": "Opportunity-custom_unidome_size"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_steel_qty_kg", "fieldtype": "Float",
+  "label": "كمية الحديد (كغ)", "insert_after": "custom_unidome_size",
+  "module": "UNIDOME", "name": "Opportunity-custom_steel_qty_kg"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_concrete_qty_m3", "fieldtype": "Float",
+  "label": "كمية الخرسانة (م³)", "insert_after": "custom_steel_qty_kg",
+  "module": "UNIDOME", "name": "Opportunity-custom_concrete_qty_m3"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_slab_thickness_mm", "fieldtype": "Float",
+  "label": "سماكة البلاطة (مم)", "insert_after": "custom_concrete_qty_m3",
+  "module": "UNIDOME", "name": "Opportunity-custom_slab_thickness_mm"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_unidome_control_section", "fieldtype": "Section Break",
+  "label": "التحكم", "insert_after": "custom_slab_thickness_mm",
+  "collapsible": 1, "module": "UNIDOME", "name": "Opportunity-custom_unidome_control_section"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_contract_signed", "fieldtype": "Check",
+  "label": "تم توقيع العقد", "insert_after": "custom_unidome_control_section",
+  "module": "UNIDOME", "name": "Opportunity-custom_contract_signed"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_contract_signed_date", "fieldtype": "Date",
+  "label": "تاريخ توقيع العقد", "insert_after": "custom_contract_signed",
+  "depends_on": "eval:doc.custom_contract_signed",
+  "module": "UNIDOME", "name": "Opportunity-custom_contract_signed_date"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_contract_file", "fieldtype": "Attach",
+  "label": "ملف العقد الموقوع", "insert_after": "custom_contract_signed_date",
+  "depends_on": "eval:doc.custom_contract_signed",
+  "module": "UNIDOME", "name": "Opportunity-custom_contract_file"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_lost_reason", "fieldtype": "Small Text",
+  "label": "سبب الخسارة (Closed Lost)", "insert_after": "custom_contract_file",
+  "module": "UNIDOME", "name": "Opportunity-custom_lost_reason"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Opportunity",
+  "fieldname": "custom_unidome_opportunity_state", "fieldtype": "Data",
+  "label": "حالة UNIDOME", "insert_after": "custom_lost_reason",
+  "read_only": 1, "in_list_view": 0, "in_standard_filter": 1,
+  "module": "UNIDOME", "name": "Opportunity-custom_unidome_opportunity_state"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Project",
+  "fieldname": "custom_unidome_project_section", "fieldtype": "Section Break",
+  "label": "UNIDOME", "insert_after": "expected_end_date",
+  "collapsible": 1, "module": "UNIDOME", "name": "Project-custom_unidome_project_section"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Project",
+  "fieldname": "custom_opportunity", "fieldtype": "Link",
+  "label": "الفرصة المرتبطة", "options": "Opportunity",
+  "insert_after": "custom_unidome_project_section",
+  "module": "UNIDOME", "name": "Project-custom_opportunity"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Project",
+  "fieldname": "custom_total_area_m2", "fieldtype": "Float",
+  "label": "المساحة الكلية (م²)", "insert_after": "custom_opportunity",
+  "module": "UNIDOME", "name": "Project-custom_total_area_m2"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Project",
+  "fieldname": "custom_floor_number", "fieldtype": "Int",
+  "label": "رقم الطابق", "insert_after": "custom_total_area_m2",
+  "module": "UNIDOME", "name": "Project-custom_floor_number"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Project",
+  "fieldname": "custom_final_design_due_date", "fieldtype": "Date",
+  "label": "تاريخ استحقاق التصميم النهائي", "insert_after": "custom_floor_number",
+  "read_only": 1, "module": "UNIDOME", "name": "Project-custom_final_design_due_date"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Project",
+  "fieldname": "custom_cost_reconciliation_status", "fieldtype": "Select",
+  "label": "حالة مطابقة التكلفة",
+  "options": "Pending\nPassed\nFailed - Margin\nFailed - Scope Change",
+  "insert_after": "custom_final_design_due_date",
+  "module": "UNIDOME", "name": "Project-custom_cost_reconciliation_status"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Project",
+  "fieldname": "custom_execution_completed_date", "fieldtype": "Date",
+  "label": "تاريخ اكتمال التنفيذ", "insert_after": "custom_cost_reconciliation_status",
+  "module": "UNIDOME", "name": "Project-custom_execution_completed_date"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Project",
+  "fieldname": "custom_vsm_review_required", "fieldtype": "Check",
+  "label": "مُعلَّم لمراجعة VSM السنوية", "insert_after": "custom_execution_completed_date",
+  "module": "UNIDOME", "name": "Project-custom_vsm_review_required"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Sales Order",
+  "fieldname": "custom_opportunity", "fieldtype": "Link",
+  "label": "الفرصة المرتبطة", "options": "Opportunity",
+  "insert_after": "customer_name",
+  "module": "UNIDOME", "name": "Sales Order-custom_opportunity"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Sales Order",
+  "fieldname": "custom_floor_count", "fieldtype": "Int",
+  "label": "عدد الطوابق", "insert_after": "custom_opportunity",
+  "module": "UNIDOME", "name": "Sales Order-custom_floor_count"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Sales Order",
+  "fieldname": "custom_project_created", "fieldtype": "Check",
+  "label": "تم إنشاء المشروع", "insert_after": "custom_floor_count",
+  "read_only": 1, "module": "UNIDOME", "name": "Sales Order-custom_project_created"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Purchase Receipt",
+  "fieldname": "custom_opportunity", "fieldtype": "Link",
+  "label": "الفرصة المرتبطة", "options": "Opportunity",
+  "insert_after": "supplier_name",
+  "module": "UNIDOME", "name": "Purchase Receipt-custom_opportunity"
+ },
+ {
+  "doctype": "Custom Field", "dt": "Purchase Receipt",
+  "fieldname": "custom_boq_created", "fieldtype": "Check",
+  "label": "تم إنشاء BOQ", "insert_after": "custom_opportunity",
+  "read_only": 1, "module": "UNIDOME", "name": "Purchase Receipt-custom_boq_created"
  }
 ]
