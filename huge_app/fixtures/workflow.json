@@ -340,7 +340,7 @@
   "doctype": "Workflow",
   "document_type": "Opportunity",
   "is_active": 1,
-  "modified": "2026-07-11 16:42:36.327152",
+  "modified": "2026-07-24 00:34:01.243589",
   "name": "UNIDOME Opportunity Workflow",
   "override_status": 0,
   "send_email_alert": 0,
@@ -394,7 +394,7 @@
     "workflow_builder_id": null
    },
    {
-    "allow_edit": "UNIDOME Operations User",
+    "allow_edit": "UNIDOME External Designer",
     "avoid_status_override": 0,
     "doc_status": "0",
     "is_optional_state": 0,
@@ -552,6 +552,22 @@
     "update_field": "",
     "update_value": "",
     "workflow_builder_id": null
+   },
+   {
+    "allow_edit": "UNIDOME External Designer",
+    "avoid_status_override": 0,
+    "doc_status": "0",
+    "is_optional_state": 0,
+    "message": null,
+    "next_action_email_template": null,
+    "parent": "UNIDOME Opportunity Workflow",
+    "parentfield": "states",
+    "parenttype": "Workflow",
+    "send_email": 1,
+    "state": "Preliminary Design Request Received",
+    "update_field": "sales_stage",
+    "update_value": "Preliminary Design Request Received",
+    "workflow_builder_id": null
    }
   ],
   "transitions": [
@@ -597,7 +613,7 @@
    {
     "action": "Request Preliminary Design",
     "allow_self_approval": 1,
-    "allowed": "UNIDOME Sales User",
+    "allowed": "UNIDOME Operations Manager",
     "condition": null,
     "next_state": "Preliminary Design Requested",
     "parent": "UNIDOME Opportunity Workflow",
@@ -610,9 +626,9 @@
    {
     "action": "Mark Received",
     "allow_self_approval": 1,
-    "allowed": "UNIDOME Operations User",
+    "allowed": "UNIDOME External Designer",
     "condition": null,
-    "next_state": "Preliminary Design Received",
+    "next_state": "Preliminary Design Request Received",
     "parent": "UNIDOME Opportunity Workflow",
     "parentfield": "transitions",
     "parenttype": "Workflow",
@@ -630,7 +646,7 @@
     "parentfield": "transitions",
     "parenttype": "Workflow",
     "send_email_to_creator": 0,
-    "state": "Preliminary Design Received",
+    "state": "Preliminary Design Request Received",
     "workflow_builder_id": null
    },
    {

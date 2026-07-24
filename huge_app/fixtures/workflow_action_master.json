@@ -2,13 +2,6 @@
  {
   "docstatus": 0,
   "doctype": "Workflow Action Master",
-  "modified": "2026-07-05 23:48:02.704414",
-  "name": "Submit for Qualification",
-  "workflow_action_name": "Submit for Qualification"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow Action Master",
   "modified": "2026-07-05 23:48:02.744500",
   "name": "Request Preliminary Design",
   "workflow_action_name": "Request Preliminary Design"
@@ -135,13 +128,6 @@
  {
   "docstatus": 0,
   "doctype": "Workflow Action Master",
-  "modified": "2026-07-05 23:48:03.298875",
-  "name": "Close Project Technically",
-  "workflow_action_name": "Close Project Technically"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow Action Master",
   "modified": "2026-07-05 23:48:03.345029",
   "name": "Approve Cost Analysis",
   "workflow_action_name": "Approve Cost Analysis"
@@ -166,5 +152,19 @@
   "modified": "2026-07-05 23:48:02.968100",
   "name": "Send Quotation",
   "workflow_action_name": "Send Quotation"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:02.704414",
+  "name": "Submit for Qualification",
+  "workflow_action_name": "Submit for Qualification"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.298875",
+  "name": "Close Project Technically",
+  "workflow_action_name": "Close Project Technically"
  }
 ]

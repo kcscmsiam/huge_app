@@ -255,14 +255,14 @@ DocType رئيسي لعروض الكميات.
 | fieldname | النوع |
 |-----------|-------|
 | `custom_unidome_design_outputs_section` | Section Break (Collapsible) |
-| `custom_final_design_file` | Attach |
-| `custom_final_boq_file` | Attach |
 | `custom_unidome_qty` | Float |
-| `custom_unidome_size` | Data |
+| `custom_unidome_size` | Data — **الصنف الفعلي المُستخدَم في Material Request** (Script 20، راجع 6.3) والـ PO للمصمم الخارجي. ملاحظة 2026-07-24: كان حقل `module` له قد أُفرغ (NULL) بشكل غير مقصود خارج هذه الجلسة، مما أسقطه صامتاً من فلتر تصدير fixtures (`module = 'UNIDOME'`) — أُعيد ضبطه إلى `UNIDOME`. تحقّق من `tabCustom Field` مباشرة إذا لاحظت اختفاء حقل من fixture رغم عدم حذفه فعلياً. |
 | `custom_steel_qty_kg` | Float |
 | `custom_concrete_qty_m3` | Float |
 | `custom_slab_thickness_mm` | Float |
 | `custom_actual_desgined_area_m2` | Data — **⚠️ موجود في القاعدة فقط، غير مُصدَّر إلى `custom_field.json` (اكتُشف 2026-07-24)**. اسم الحقل به خطأ إملائي فعلي ("desgined" لا "designed") — استُخدم كما هو، لا تُصحّحه دون تنسيق (سيكسر أي كود/تقرير يشير إليه). يُستخدم كـ "الكمية المستلمة" في Purchase Receipt عند اعتماد التصميم المبدئي (راجع Script 17 في 6.2). نوعه Data وليس Float — يُحوَّل بـ `frappe.utils.flt()` عند الاستخدام. |
+
+> **⚠️ حقلان حُذفا خارج هذه الجلسة (اكتُشف 2026-07-24 أثناء `export-fixtures`):** `custom_final_design_file` و`custom_final_boq_file` (Attach — مرفق التصميم النهائي وBOQ النهائي) لم يعودا موجودين كـ Custom Field على الإطلاق. **الأعمدة نفسها ما زالت موجودة في جدول `tabOpportunity`** وتحتوي بيانات فعلية (فرصتان لـ design_file، فرصة واحدة لـ boq_file) — البيانات غير مفقودة لكنها غير ظاهرة/غير قابلة للتعديل حالياً لعدم وجود تعريف الحقل. **قرار مقصود من المستخدم (2026-07-24): تُركا محذوفين عمداً ولم يُعاد إنشاؤهما.** لا تُعد إنشاءهما دون طلب صريح.
 
 **مجموعة التحكم:**
 

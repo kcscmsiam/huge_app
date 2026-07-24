@@ -210,15 +210,6 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": null,
-  "modified": "2026-07-05 23:48:03.668621",
-  "name": "Costing and Saving Analysis",
-  "style": "",
-  "workflow_state_name": "Costing and Saving Analysis"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": null,
   "modified": "2026-07-05 23:48:03.696363",
   "name": "Quotation Ready",
   "style": "Success",
@@ -228,28 +219,10 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": null,
-  "modified": "2026-07-05 23:48:03.725279",
-  "name": "Quotation Sent",
-  "style": "",
-  "workflow_state_name": "Quotation Sent"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": null,
   "modified": "2026-07-05 23:48:03.762211",
   "name": "Negotiation/Review",
   "style": "Warning",
   "workflow_state_name": "Negotiation/Review"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": null,
-  "modified": "2026-07-05 23:48:03.792126",
-  "name": "Closed Won",
-  "style": "Success",
-  "workflow_state_name": "Closed Won"
  },
  {
   "docstatus": 0,
@@ -273,33 +246,6 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": null,
-  "modified": "2026-07-05 23:48:03.890202",
-  "name": "Final Design",
-  "style": "",
-  "workflow_state_name": "Final Design"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": null,
-  "modified": "2026-07-05 23:48:03.911257",
-  "name": "Design Review",
-  "style": "Warning",
-  "workflow_state_name": "Design Review"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": null,
-  "modified": "2026-07-05 23:48:03.937462",
-  "name": "Final Design Approved",
-  "style": "Success",
-  "workflow_state_name": "Final Design Approved"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": null,
   "modified": "2026-07-05 23:48:03.954261",
   "name": "Material Planning",
   "style": "",
@@ -313,33 +259,6 @@
   "name": "Manufacturing",
   "style": "",
   "workflow_state_name": "Manufacturing"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": null,
-  "modified": "2026-07-05 23:48:03.989525",
-  "name": "Site Execution",
-  "style": "",
-  "workflow_state_name": "Site Execution"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": null,
-  "modified": "2026-07-05 23:48:04.017768",
-  "name": "Project Closure",
-  "style": "Warning",
-  "workflow_state_name": "Project Closure"
- },
- {
-  "docstatus": 0,
-  "doctype": "Workflow State",
-  "icon": null,
-  "modified": "2026-07-05 23:48:04.036053",
-  "name": "Final Cost Analysis",
-  "style": "",
-  "workflow_state_name": "Final Cost Analysis"
  },
  {
   "docstatus": 0,
@@ -372,10 +291,100 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": null,
-  "modified": "2026-07-05 23:48:03.544898",
-  "name": "Qualification Review",
+  "modified": "2026-07-05 23:48:03.565114",
+  "name": "Qualified",
+  "style": "Success",
+  "workflow_state_name": "Qualified"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-05-09 20:38:36.944803",
+  "name": "Preliminary Design Approved",
   "style": "",
-  "workflow_state_name": "Qualification Review"
+  "workflow_state_name": "Preliminary Design Approved"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": "",
+  "modified": "2026-07-24 00:13:25.581238",
+  "name": "Preliminary Design Request Received",
+  "style": "",
+  "workflow_state_name": "Preliminary Design Request Received"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": null,
+  "modified": "2026-07-05 23:48:03.668621",
+  "name": "Costing and Saving Analysis",
+  "style": "",
+  "workflow_state_name": "Costing and Saving Analysis"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": null,
+  "modified": "2026-07-05 23:48:03.725279",
+  "name": "Quotation Sent",
+  "style": "",
+  "workflow_state_name": "Quotation Sent"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": null,
+  "modified": "2026-07-05 23:48:03.792126",
+  "name": "Closed Won",
+  "style": "Success",
+  "workflow_state_name": "Closed Won"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": null,
+  "modified": "2026-07-05 23:48:03.911257",
+  "name": "Design Review",
+  "style": "Warning",
+  "workflow_state_name": "Design Review"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": null,
+  "modified": "2026-07-05 23:48:03.937462",
+  "name": "Final Design Approved",
+  "style": "Success",
+  "workflow_state_name": "Final Design Approved"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": null,
+  "modified": "2026-07-05 23:48:03.989525",
+  "name": "Site Execution",
+  "style": "",
+  "workflow_state_name": "Site Execution"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": null,
+  "modified": "2026-07-05 23:48:04.017768",
+  "name": "Project Closure",
+  "style": "Warning",
+  "workflow_state_name": "Project Closure"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow State",
+  "icon": null,
+  "modified": "2026-07-05 23:48:04.036053",
+  "name": "Final Cost Analysis",
+  "style": "",
+  "workflow_state_name": "Final Cost Analysis"
  },
  {
   "docstatus": 0,
@@ -399,18 +408,18 @@
   "docstatus": 0,
   "doctype": "Workflow State",
   "icon": null,
-  "modified": "2026-07-05 23:48:03.565114",
-  "name": "Qualified",
-  "style": "Success",
-  "workflow_state_name": "Qualified"
+  "modified": "2026-07-05 23:48:03.544898",
+  "name": "Qualification Review",
+  "style": "",
+  "workflow_state_name": "Qualification Review"
  },
  {
   "docstatus": 0,
   "doctype": "Workflow State",
-  "icon": "",
-  "modified": "2026-05-09 20:38:36.944803",
-  "name": "Preliminary Design Approved",
+  "icon": null,
+  "modified": "2026-07-05 23:48:03.890202",
+  "name": "Final Design",
   "style": "",
-  "workflow_state_name": "Preliminary Design Approved"
+  "workflow_state_name": "Final Design"
  }
 ]
