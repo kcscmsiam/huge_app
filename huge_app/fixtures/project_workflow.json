@@ -1,0 +1,180 @@
+[
+ {
+  "doctype": "Workflow",
+  "name": "UNIDOME Project Workflow",
+  "workflow_name": "UNIDOME Project Workflow",
+  "document_type": "Project",
+  "workflow_state_field": "custom_project_stage",
+  "is_active": 1,
+  "send_email_alert": 0,
+  "states": [
+   {
+    "doctype": "Workflow Document State",
+    "state": "Project Initiated",
+    "doc_status": "0",
+    "allow_edit": "Projects Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Final Design",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME External Designer",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Design Review",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Technical Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Final Design Approved",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Technical Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Material Planning",
+    "doc_status": "0",
+    "allow_edit": "Projects Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Manufacturing",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Factory User",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Site Execution",
+    "doc_status": "0",
+    "allow_edit": "Projects Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Project Closure",
+    "doc_status": "0",
+    "allow_edit": "Projects Manager",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Final Cost Analysis",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Finance User",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Invoice & Collection",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Finance User",
+    "is_optional_state": 0
+   },
+   {
+    "doctype": "Workflow Document State",
+    "state": "Completed",
+    "doc_status": "0",
+    "allow_edit": "UNIDOME Finance User",
+    "is_optional_state": 0
+   }
+  ],
+  "transitions": [
+   {
+    "doctype": "Workflow Transition",
+    "state": "Project Initiated",
+    "action": "Start Final Design",
+    "next_state": "Final Design",
+    "allowed": "Projects Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Final Design",
+    "action": "Submit for Design Review",
+    "next_state": "Design Review",
+    "allowed": "UNIDOME External Designer",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Design Review",
+    "action": "Approve Final Design",
+    "next_state": "Final Design Approved",
+    "allowed": "UNIDOME Technical Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Design Review",
+    "action": "Reject - Request Revision",
+    "next_state": "Final Design",
+    "allowed": "UNIDOME Technical Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Final Design Approved",
+    "action": "Start Material Planning",
+    "next_state": "Material Planning",
+    "allowed": "Projects Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Material Planning",
+    "action": "Approve Material Plan",
+    "next_state": "Manufacturing",
+    "allowed": "UNIDOME Operations Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Manufacturing",
+    "action": "Complete Manufacturing",
+    "next_state": "Site Execution",
+    "allowed": "UNIDOME Factory User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Site Execution",
+    "action": "Complete Site Execution",
+    "next_state": "Project Closure",
+    "allowed": "Projects Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Project Closure",
+    "action": "Close Project Technically",
+    "next_state": "Final Cost Analysis",
+    "allowed": "Projects Manager",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Final Cost Analysis",
+    "action": "Approve Cost Analysis",
+    "next_state": "Invoice & Collection",
+    "allowed": "UNIDOME Finance User",
+    "allow_self_approval": 1
+   },
+   {
+    "doctype": "Workflow Transition",
+    "state": "Invoice & Collection",
+    "action": "Confirm Payment",
+    "next_state": "Completed",
+    "allowed": "UNIDOME Finance User",
+    "allow_self_approval": 1
+   }
+  ]
+ }
+]

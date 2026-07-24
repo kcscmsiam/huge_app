@@ -1,1 +1,3 @@
 huge_app.patches.create_unidome_project_template
+huge_app.patches.add_project_stage_field
+huge_app.patches.create_workflow_notifications

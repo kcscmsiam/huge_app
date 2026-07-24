@@ -32,6 +32,7 @@ def on_update(doc, method=None):
         return
     _unidome_final_design_sla(doc)
     _unidome_cost_reconciliation_gate(doc)
+    _unidome_project_stage_material_planning(doc)
     _unidome_execution_completed_invoice(doc)
 
 
@@ -121,6 +122,22 @@ def _unidome_cost_reconciliation_gate(doc):
         )
 
 
+# ─── Script 20: UNIDOME Project Workflow → Material Planning creates MR ──────
+
+def _unidome_project_stage_material_planning(doc):
+    stage = doc.get("custom_project_stage")
+    if stage != "Material Planning":
+        return
+
+    prev_doc = doc.get_doc_before_save()
+    if not prev_doc:
+        return
+    if prev_doc.get("custom_project_stage") == "Material Planning":
+        return
+
+    _unidome_create_material_request(doc)
+
+
 # ─── Script 10: Create Material Request from Opportunity BOQ ─────────────────
 
 def _unidome_create_material_request(project_doc):
@@ -132,57 +149,54 @@ def _unidome_create_material_request(project_doc):
         )
         return
 
-    existing_mr = frappe.db.get_value(
+    existing_mr = frappe.get_all(
         "Material Request",
-        {"project": project_doc.name, "docstatus": ["!=", 2]},
-        "name"
+        filters=[
+            ["Material Request Item", "project", "=", project_doc.name],
+            ["Material Request", "docstatus", "!=", 2],
+        ],
+        pluck="name",
+        limit=1,
     )
     if existing_mr:
         return
 
     opp         = frappe.get_doc("Opportunity", opp_name)
     unidome_qty = frappe.utils.flt(opp.get("custom_unidome_qty") or 0)
-    steel_qty   = frappe.utils.flt(opp.get("custom_steel_qty_kg") or 0)
+    item_code   = opp.get("custom_unidome_size")
 
-    if not unidome_qty and not steel_qty:
+    if not unidome_qty or not item_code:
         frappe.log_error(
             "UNIDOME Create MR — Missing BOQ Data",
-            f"Opportunity {opp_name} has no BOQ quantities. MR not created."
+            f"Opportunity {opp_name} has no custom_unidome_qty/custom_unidome_size. MR not created."
+        )
+        return
+
+    if not frappe.db.exists("Item", item_code):
+        frappe.log_error(
+            "UNIDOME Create MR — Unknown Item",
+            f"Opportunity {opp_name} custom_unidome_size '{item_code}' is not a valid Item. MR not created."
         )
         return
 
     mr = frappe.new_doc("Material Request")
     mr.material_request_type = "Manufacture"
-    mr.project               = project_doc.name
     mr.company               = project_doc.company
     mr.transaction_date      = frappe.utils.today()
     mr.schedule_date         = frappe.utils.add_days(frappe.utils.today(), 14)
 
     default_warehouse = f"Stores - {_get_abbr(project_doc.company)}"
 
-    if unidome_qty and frappe.db.exists("Item", "Unidome Unit"):
-        available = _get_bin_qty("Unidome Unit", default_warehouse)
-        net_qty   = max(0, unidome_qty - available)
-        if net_qty > 0:
-            mr.append("items", {
-                "item_code"    : "Unidome Unit",
-                "qty"          : net_qty,
-                "uom"          : "Nos",
-                "warehouse"    : default_warehouse,
-                "schedule_date": mr.schedule_date,
-            })
-
-    if steel_qty and frappe.db.exists("Item", "Steel Rebar"):
-        available = _get_bin_qty("Steel Rebar", default_warehouse)
-        net_qty   = max(0, steel_qty - available)
-        if net_qty > 0:
-            mr.append("items", {
-                "item_code"    : "Steel Rebar",
-                "qty"          : net_qty,
-                "uom"          : "Kg",
-                "warehouse"    : default_warehouse,
-                "schedule_date": mr.schedule_date,
-            })
+    available = _get_bin_qty(item_code, default_warehouse)
+    net_qty   = max(0, unidome_qty - available)
+    if net_qty > 0:
+        mr.append("items", {
+            "item_code"    : item_code,
+            "qty"          : net_qty,
+            "warehouse"    : default_warehouse,
+            "schedule_date": mr.schedule_date,
+            "project"      : project_doc.name,
+        })
 
     if mr.items:
         mr.flags.ignore_unidome_hooks = True

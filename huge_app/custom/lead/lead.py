@@ -13,7 +13,7 @@ def _unidome_lead_converted(doc):
 
     existing = frappe.db.get_value(
         "Opportunity",
-        {"lead": doc.name, "docstatus": ["!=", 2]},
+        {"party_name": doc.name, "opportunity_from": "Lead", "docstatus": ["!=", 2]},
         "name"
     )
     if existing:
@@ -21,8 +21,7 @@ def _unidome_lead_converted(doc):
 
     opp = frappe.new_doc("Opportunity")
     opp.opportunity_from = "Lead"
-    opp.party_name = doc.lead_name
-    opp.lead = doc.name
+    opp.party_name = doc.name
     opp.custom_unidome_opportunity_state = "Needs Analysis"
     opp.status = "Open"
 

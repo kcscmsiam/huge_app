@@ -25,7 +25,7 @@ def on_submit(doc, method=None):
 
 
 def on_update(doc, method=None):
-    current_state = doc.workflow_state or ""
+    current_state = doc.get("review_status") or ""
     if current_state != "Approved":
         return
 
@@ -58,19 +58,14 @@ def on_update(doc, method=None):
         return
 
     opp = frappe.get_doc("Opportunity", pr_opportunity)
+    project = frappe.db.get_value("Project", {"custom_opportunity": pr_opportunity})
 
     boq = frappe.new_doc("Project BOQ")
-    boq.opportunity      = pr_opportunity
-    boq.company          = opp.company
-    boq.customer         = opp.party_name
-    boq.project_name     = opp.get("custom_project_name") or opp.title
-    boq.total_area_m2    = opp.get("total_project_area_m2") or 0
-    boq.purchase_receipt = doc.name
-    boq.status           = "Draft"
-    boq.date             = frappe.utils.today()
-    boq.unidome_supplier = opp.company
-    boq.steel_supplier   = "Customer"
-    boq.concrete_supplier = "Customer"
+    boq.opportunity       = pr_opportunity
+    boq.project           = project
+    boq.total_slab_area_m2 = frappe.utils.flt(opp.get("custom_total_slab_area"))
+    boq.status            = "Draft"
+    boq.notes             = f"تم الإنشاء تلقائياً من Purchase Receipt {doc.name}"
 
     boq.insert(ignore_permissions=True)
 

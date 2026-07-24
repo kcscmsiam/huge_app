@@ -30,10 +30,13 @@ def on_update(doc, method=None):
     _handle_workflow_rejected(doc)
 
     # UNIDOME automations
+    _unidome_sync_external_items_rate(doc)
+    _unidome_create_po_for_external_designer(doc)
     _unidome_sla_preliminary_design(doc)
+    _unidome_final_design_validate_fields(doc)
+    _unidome_preliminary_design_approved_create_pr(doc)
     _unidome_costing_approved_create_quotation(doc)
     _unidome_negotiation_lost_reason(doc)
-    _unidome_final_design_validate_fields(doc)
 
 
 # ─── Outsourced Designer: create PO on Approve ───────────────────────────────
@@ -142,6 +145,113 @@ def _handle_workflow_rejected(doc):
     )
 
 
+# ─── Script 18: Sync custom_external_items rate from supplier's Price List ──
+
+def _unidome_sync_external_items_rate(doc):
+    supplier = doc.get("custom_external_designer")
+    if not supplier or not doc.get("custom_external_items"):
+        return
+
+    price_list = frappe.db.get_value("Supplier", supplier, "default_price_list")
+    if not price_list:
+        return
+
+    for row in doc.custom_external_items:
+        if not row.item_code:
+            continue
+
+        price_list_rate = _get_item_price_list_rate(row.item_code, price_list, supplier)
+        if price_list_rate and row.rate != price_list_rate:
+            row.rate = price_list_rate
+            frappe.db.set_value(
+                "External Item Details", row.name, "rate", price_list_rate,
+                update_modified=False,
+            )
+
+
+def _get_item_price_list_rate(item_code, price_list, supplier):
+    # External Item Details has no UOM field, so match on item_code + price_list
+    # only — prefer a row tied to this supplier, fall back to a general one.
+    rows = frappe.get_all(
+        "Item Price",
+        filters={"item_code": item_code, "price_list": price_list, "buying": 1},
+        fields=["supplier", "price_list_rate"],
+        order_by="valid_from desc",
+    )
+    for row in rows:
+        if row.supplier == supplier:
+            return row.price_list_rate
+    for row in rows:
+        if not row.supplier:
+            return row.price_list_rate
+    return None
+
+
+# ─── Script 2a: UNIDOME workflow → create PO for external designer ──────────
+
+def _unidome_create_po_for_external_designer(doc):
+    unidome_state = doc.get("custom_unidome_opportunity_state")
+    if unidome_state != "Preliminary Design Requested":
+        return
+
+    prev_doc = doc.get_doc_before_save()
+    if not prev_doc:
+        return
+    if prev_doc.get("custom_unidome_opportunity_state") == "Preliminary Design Requested":
+        return
+
+    supplier = doc.get("custom_external_designer")
+    if not supplier:
+        frappe.throw("يرجى تحديد المصمم الخارجي (External Designer) قبل طلب التصميم المبدئي.")
+
+    if not doc.custom_external_items:
+        frappe.throw("يرجى إضافة الأصناف (External Designer Items) في الفرصة قبل طلب التصميم المبدئي.")
+
+    existing_po = frappe.db.get_value("Purchase Order", {
+        "opportunity": doc.name,
+        "docstatus"  : ["!=", 2],
+    })
+    if existing_po:
+        frappe.msgprint(
+            f"أمر الشراء <b>{existing_po}</b> موجود مسبقاً لهذه الفرصة.",
+            title="تنبيه", indicator="orange"
+        )
+        return
+
+    po = frappe.new_doc("Purchase Order")
+    po.supplier      = supplier
+    po.opportunity   = doc.name
+    po.schedule_date = frappe.utils.add_days(frappe.utils.nowdate(), 7)
+
+    company = po.company or frappe.defaults.get_user_default("company")
+    abbr    = frappe.db.get_value("Company", company, "abbr")
+    default_warehouse = f"Stores - {abbr}" if abbr else None
+
+    for item in doc.custom_external_items:
+        po.append("items", {
+            "item_code"    : item.item_code,
+            "qty"          : item.qty,
+            "rate"         : item.rate,
+            "schedule_date": frappe.utils.add_days(frappe.utils.nowdate(), 7),
+            "custom_note"  : item.description,
+            "warehouse"    : default_warehouse,
+        })
+
+    po.flags.ignore_unidome_hooks = True
+    po.insert(ignore_permissions=True)
+    po.submit()
+
+    frappe.publish_realtime("msgprint", {
+        "message"  : f"✅ تم إنشاء أمر الشراء <b><a href='/app/purchase-order/{po.name}'>{po.name}</a></b>",
+        "title"    : "Purchase Order Created",
+        "indicator": "green",
+    }, user=frappe.session.user)
+
+    frappe.logger("huge_app").info(
+        f"[huge_app] PO {po.name} created for Opportunity {doc.name} (UNIDOME workflow)"
+    )
+
+
 # ─── Script 2: SLA for Preliminary Design ────────────────────────────────────
 
 def _unidome_sla_preliminary_design(doc):
@@ -186,6 +296,71 @@ def _unidome_sla_preliminary_design(doc):
             )
 
 
+# ─── Script 17: Preliminary Design Review Approved → Create Purchase Receipt ─
+
+def _unidome_preliminary_design_approved_create_pr(doc):
+    unidome_state = doc.get("custom_unidome_opportunity_state")
+    if unidome_state != "Costing and Saving Analysis":
+        return
+
+    prev_doc = doc.get_doc_before_save()
+    if not prev_doc:
+        return
+    if prev_doc.get("custom_unidome_opportunity_state") != "Preliminary Design Review":
+        return
+
+    po_name = frappe.db.get_value("Purchase Order", {
+        "opportunity": doc.name,
+        "docstatus"  : 1,
+    })
+    if not po_name:
+        frappe.throw(
+            "لا يوجد أمر شراء مسلّم للمصمم الخارجي مرتبط بهذه الفرصة — "
+            "لا يمكن إنشاء إشعار استلام التصميم المبدئي."
+        )
+
+    existing_pr = frappe.db.get_value("Purchase Receipt", {
+        "custom_opportunity": doc.name,
+        "docstatus"         : ["!=", 2],
+    })
+    if existing_pr:
+        frappe.msgprint(
+            f"إشعار الاستلام <b>{existing_pr}</b> موجود مسبقاً لهذه الفرصة.",
+            title="تنبيه", indicator="orange"
+        )
+        return
+
+    actual_area = frappe.utils.flt(doc.get("custom_actual_desgined_area_m2"))
+    if not actual_area:
+        frappe.throw(
+            "يرجى إدخال المساحة المصممة الفعلية (custom_actual_desgined_area_m2) "
+            "قبل الموافقة على التصميم المبدئي."
+        )
+
+    from erpnext.buying.doctype.purchase_order.purchase_order import make_purchase_receipt
+
+    pr = make_purchase_receipt(po_name)
+    pr.custom_opportunity = doc.name
+    for item in pr.items:
+        item.qty = actual_area
+
+    pr.flags.ignore_unidome_hooks = True
+    pr.insert(ignore_permissions=True)
+    pr.submit()
+
+    frappe.publish_realtime("msgprint", {
+        "message"  : f"✅ تم إنشاء إشعار استلام التصميم المبدئي "
+                     f"<b><a href='/app/purchase-receipt/{pr.name}'>{pr.name}</a></b>",
+        "title"    : "Purchase Receipt Created",
+        "indicator": "green",
+    }, user=frappe.session.user)
+
+    frappe.logger("huge_app").info(
+        f"[huge_app] Purchase Receipt {pr.name} created for Opportunity {doc.name} "
+        f"(Preliminary Design Review approved → Costing and Saving Analysis)"
+    )
+
+
 # ─── Script 3: Costing Approved → Auto-create Quotation ─────────────────────
 
 def _unidome_costing_approved_create_quotation(doc):
@@ -207,29 +382,31 @@ def _unidome_costing_approved_create_quotation(doc):
     if existing_qt:
         return
 
-    party_type = "Customer"
-    party = frappe.db.get_value("Customer", {"customer_name": doc.party_name}, "name")
-    if not party:
-        party_type = "Lead"
-        party = doc.lead
+    party_type = doc.opportunity_from or "Lead"
+    party = doc.party_name
 
-    area = frappe.utils.flt(doc.get("custom_total_slab_area") or 0)
-    item_description = f"Unidome Slab System – {area} م²"
+    if not doc.get("items"):
+        frappe.throw(
+            "لا يمكن إنشاء عرض سعر تلقائي بدون أصناف في جدول Items الخاص بالفرصة",
+            frappe.ValidationError
+        )
 
     qt = frappe.new_doc("Quotation")
     qt.quotation_to  = party_type
-    qt.party_name    = party or doc.party_name
+    qt.party_name    = party
     qt.opportunity   = doc.name
     qt.valid_till    = frappe.utils.add_days(frappe.utils.today(), 30)
     qt.order_type    = "Sales"
 
-    qt.append("items", {
-        "item_name"  : "Unidome Slab System",
-        "description": item_description,
-        "qty"        : area or 1,
-        "rate"       : 0,
-        "uom"        : "Meter²" if frappe.db.exists("UOM", "Meter²") else "Nos",
-    })
+    for row in doc.get("items"):
+        qt.append("items", {
+            "item_code"  : row.item_code,
+            "item_name"  : row.item_name,
+            "description": row.description,
+            "qty"        : row.qty,
+            "uom"        : row.uom,
+            "rate"       : row.rate,
+        })
 
     qt.flags.ignore_unidome_hooks = True
     qt.insert(ignore_permissions=True)

@@ -1,16 +1,170 @@
 [
- {"doctype": "Workflow Action Master", "name": "Submit for Qualification",   "workflow_action_name": "Submit for Qualification"},
- {"doctype": "Workflow Action Master", "name": "Request Preliminary Design", "workflow_action_name": "Request Preliminary Design"},
- {"doctype": "Workflow Action Master", "name": "Mark Received",              "workflow_action_name": "Mark Received"},
- {"doctype": "Workflow Action Master", "name": "Submit for Review",          "workflow_action_name": "Submit for Review"},
- {"doctype": "Workflow Action Master", "name": "Approve Preliminary Design", "workflow_action_name": "Approve Preliminary Design"},
- {"doctype": "Workflow Action Master", "name": "Reject - Request Revision",  "workflow_action_name": "Reject - Request Revision"},
- {"doctype": "Workflow Action Master", "name": "Request Design Revision",    "workflow_action_name": "Request Design Revision"},
- {"doctype": "Workflow Action Master", "name": "Re-request Design",          "workflow_action_name": "Re-request Design"},
- {"doctype": "Workflow Action Master", "name": "Approve Costing",            "workflow_action_name": "Approve Costing"},
- {"doctype": "Workflow Action Master", "name": "Send Quotation",             "workflow_action_name": "Send Quotation"},
- {"doctype": "Workflow Action Master", "name": "Mark as Under Negotiation",  "workflow_action_name": "Mark as Under Negotiation"},
- {"doctype": "Workflow Action Master", "name": "Revise Pricing",             "workflow_action_name": "Revise Pricing"},
- {"doctype": "Workflow Action Master", "name": "Mark Won",                   "workflow_action_name": "Mark Won"},
- {"doctype": "Workflow Action Master", "name": "Mark Lost",                  "workflow_action_name": "Mark Lost"}
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:02.704414",
+  "name": "Submit for Qualification",
+  "workflow_action_name": "Submit for Qualification"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:02.744500",
+  "name": "Request Preliminary Design",
+  "workflow_action_name": "Request Preliminary Design"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:02.769805",
+  "name": "Mark Received",
+  "workflow_action_name": "Mark Received"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:02.797417",
+  "name": "Submit for Review",
+  "workflow_action_name": "Submit for Review"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:02.828149",
+  "name": "Approve Preliminary Design",
+  "workflow_action_name": "Approve Preliminary Design"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:02.854787",
+  "name": "Reject - Request Revision",
+  "workflow_action_name": "Reject - Request Revision"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:02.883712",
+  "name": "Request Design Revision",
+  "workflow_action_name": "Request Design Revision"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:02.941675",
+  "name": "Approve Costing",
+  "workflow_action_name": "Approve Costing"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:02.987635",
+  "name": "Mark as Under Negotiation",
+  "workflow_action_name": "Mark as Under Negotiation"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.023921",
+  "name": "Revise Pricing",
+  "workflow_action_name": "Revise Pricing"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.048703",
+  "name": "Mark Won",
+  "workflow_action_name": "Mark Won"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.075239",
+  "name": "Mark Lost",
+  "workflow_action_name": "Mark Lost"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.107172",
+  "name": "Start Final Design",
+  "workflow_action_name": "Start Final Design"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.130242",
+  "name": "Submit for Design Review",
+  "workflow_action_name": "Submit for Design Review"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.151717",
+  "name": "Approve Final Design",
+  "workflow_action_name": "Approve Final Design"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.179920",
+  "name": "Start Material Planning",
+  "workflow_action_name": "Start Material Planning"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.210637",
+  "name": "Approve Material Plan",
+  "workflow_action_name": "Approve Material Plan"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.240853",
+  "name": "Complete Manufacturing",
+  "workflow_action_name": "Complete Manufacturing"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.268127",
+  "name": "Complete Site Execution",
+  "workflow_action_name": "Complete Site Execution"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.298875",
+  "name": "Close Project Technically",
+  "workflow_action_name": "Close Project Technically"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.345029",
+  "name": "Approve Cost Analysis",
+  "workflow_action_name": "Approve Cost Analysis"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:03.369840",
+  "name": "Confirm Payment",
+  "workflow_action_name": "Confirm Payment"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:02.918112",
+  "name": "Re-request Design",
+  "workflow_action_name": "Re-request Design"
+ },
+ {
+  "docstatus": 0,
+  "doctype": "Workflow Action Master",
+  "modified": "2026-07-05 23:48:02.968100",
+  "name": "Send Quotation",
+  "workflow_action_name": "Send Quotation"
+ }
 ]

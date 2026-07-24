@@ -155,6 +155,7 @@ doc_events = {
 		"on_update"   : "huge_app.custom.project.project.on_update",
 	},
 	"Sales Order": {
+		"validate"     : "huge_app.custom.sales_order.sales_order.validate",
 		"before_submit": "huge_app.custom.sales_order.sales_order.before_submit",
 		"on_submit"    : "huge_app.custom.sales_order.sales_order.on_submit",
 	},
@@ -297,7 +298,11 @@ fixtures = [
         "Submit for Review", "Approve Preliminary Design", "Reject - Request Revision",
         "Request Design Revision", "Re-request Design", "Approve Costing",
         "Send Quotation", "Mark as Under Negotiation", "Revise Pricing",
-        "Mark Won", "Mark Lost"
+        "Mark Won", "Mark Lost",
+        "Start Final Design", "Submit for Design Review", "Approve Final Design",
+        "Start Material Planning", "Approve Material Plan", "Complete Manufacturing",
+        "Complete Site Execution", "Close Project Technically",
+        "Approve Cost Analysis", "Confirm Payment"
     ]]]},
     {
         "dt": "Custom Field",
@@ -319,7 +324,11 @@ fixtures = [
     },
     {
         "dt": "Workflow",
-        "filters": [["name", "=", "UNIDOME Opportunity Workflow"]]
+        "filters": [["name", "in", ["UNIDOME Opportunity Workflow", "UNIDOME Project Workflow"]]]
     },
     {"dt": "Workflow State"},
+    {
+        "dt": "Notification",
+        "filters": [["name", "like", "UNIDOME WF Notify:%"]]
+    },
 ]

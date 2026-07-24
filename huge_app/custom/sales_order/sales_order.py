@@ -18,6 +18,12 @@ UNIDOME_TASKS = [
 ]
 
 
+def validate(doc, method=None):
+    if doc.flags.ignore_unidome_hooks:
+        return
+    _unidome_set_opportunity_from_quotation(doc)
+
+
 def before_submit(doc, method=None):
     if doc.flags.ignore_unidome_hooks:
         return
@@ -43,7 +49,7 @@ def on_submit(doc, method=None):
 
         additional_floors = []
         if floor_count > 1:
-            additional_floors = _create_additional_floors(doc, project_name, floor_count)
+            additional_floors = _create_additional_floors(doc, project_name, floor_count, opp_details)
 
         _create_kickoff_invoice(doc)
 
@@ -51,6 +57,32 @@ def on_submit(doc, method=None):
         frappe.logger("huge_app").info(
             f"[SO Submit] {doc.name} → Project: {created_project}. Floors: {additional_floors}"
         )
+
+
+# ─── Script 19: validate — backfill custom_opportunity from source Quotation ──
+
+def _unidome_set_opportunity_from_quotation(doc):
+    # erpnext's Quotation → Sales Order mapper never carries the `opportunity`
+    # field over, since Sales Order has no field of that exact name (only the
+    # UNIDOME custom_opportunity field) — get_mapped_doc only auto-copies
+    # same-named fields. Without this, custom_opportunity stays empty, which
+    # silently skips the contract-signed validation below and leaves the
+    # Project created on submit with no opportunity link either.
+    if doc.get("custom_opportunity"):
+        return
+
+    quotation_name = None
+    for item in doc.get("items") or []:
+        if item.get("prevdoc_docname"):
+            quotation_name = item.prevdoc_docname
+            break
+
+    if not quotation_name:
+        return
+
+    opportunity = frappe.db.get_value("Quotation", quotation_name, "opportunity")
+    if opportunity:
+        doc.custom_opportunity = opportunity
 
 
 # ─── Script 5: before_submit — contract signed + quotation validation ─────────
@@ -115,8 +147,7 @@ def _create_project_from_template(project_name, so_doc, opp_details):
     project.sales_order         = so_doc.name
     project.project_template    = TEMPLATE_NAME
 
-    if opp_details.get("name") and hasattr(project, "custom_opportunity"):
-        project.custom_opportunity = opp_details["name"]
+    _set_project_opportunity_links(project, opp_details)
     if opp_details.get("area_m2") and hasattr(project, "custom_total_area_m2"):
         project.custom_total_area_m2 = opp_details["area_m2"]
 
@@ -133,8 +164,7 @@ def _create_project_with_tasks(project_name, so_doc, opp_details):
     project.expected_start_date = frappe.utils.today()
     project.sales_order         = so_doc.name
 
-    if opp_details.get("name") and hasattr(project, "custom_opportunity"):
-        project.custom_opportunity = opp_details["name"]
+    _set_project_opportunity_links(project, opp_details)
     if opp_details.get("area_m2") and hasattr(project, "custom_total_area_m2"):
         project.custom_total_area_m2 = opp_details["area_m2"]
 
@@ -150,7 +180,7 @@ def _create_project_with_tasks(project_name, so_doc, opp_details):
     return project.name
 
 
-def _create_additional_floors(so_doc, base_project_name, floor_count):
+def _create_additional_floors(so_doc, base_project_name, floor_count, opp_details=None):
     created = []
     for floor_num in range(2, floor_count + 1):
         floor_project_name = base_project_name.replace("Floor 1", f"Floor {floor_num}")
@@ -169,10 +199,22 @@ def _create_additional_floors(so_doc, base_project_name, floor_count):
         if hasattr(floor_project, "custom_floor_number"):
             floor_project.custom_floor_number = floor_num
 
+        _set_project_opportunity_links(floor_project, opp_details or {})
+
         floor_project.insert(ignore_permissions=True)
         created.append(floor_project.name)
 
     return created
+
+
+def _set_project_opportunity_links(project, opp_details):
+    opp_name = opp_details.get("name")
+    if not opp_name:
+        return
+    if hasattr(project, "opportunity"):
+        project.opportunity = opp_name
+    if hasattr(project, "custom_opportunity"):
+        project.custom_opportunity = opp_name
 
 
 def _create_kickoff_invoice(so_doc):
